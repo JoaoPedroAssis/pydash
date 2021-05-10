@@ -14,6 +14,7 @@ is made inside of handle_segment_size_request(), before sending the message down
 
 from r2a.ir2a import IR2A
 from player.parser import *
+from time import perf_counter as get_curr_time
 
 class R2APanda(IR2A):
 
@@ -25,6 +26,7 @@ class R2APanda(IR2A):
         self.target_throughputs = []
         self.filtered_throughputs = []
 
+        # Time mesurements
         self.request_time = 0
         self.inter_request_time = []
 
@@ -37,10 +39,27 @@ class R2APanda(IR2A):
         self.min_buffer_size = 20
 
     def handle_xml_request(self, msg):
-        pass
+
+        self.request_time = get_curr_time()
+        self.send_down(msg)
+
 
     def handle_xml_response(self, msg):
-        pass
+        # Get quality list from message payload
+        parsed_mpd = parse_mpd(msg.get_payload())
+        self.qi = parsed_mpd.get_qi()
+
+        request_duration = get_curr_time() - self.request_time
+        
+        # If throughput list is empty, initialize values
+        if not self.throughputs:
+            bitrate = msg.get_bit_lenght() / request_duration
+
+            self.throughputs.append(bitrate)
+            self.target_throughputs.append(bitrate)
+            self.filtered_throughputs.append(bitrate)
+
+        self.send_up(msg)
 
     def handle_segment_size_request(self, msg):
         pass
