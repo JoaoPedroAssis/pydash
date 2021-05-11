@@ -40,7 +40,6 @@ class R2APanda(IR2A):
         self.min_buffer_size = 20
 
     def handle_xml_request(self, msg):
-
         self.request_time = get_curr_time()
         self.send_down(msg)
 
@@ -107,28 +106,28 @@ class R2APanda(IR2A):
             self.target_throughputs.append(x)
             self.filtered_throughputs.append(y)
 
-        # Implements the algorithms deadzone
+        # Implements the deadzone
 
-        selected_rup = self.qi[0]
-        selected_rdown = self.qi[0]
+        selected_R_up = self.qi[0]
+        selected_R_down = self.qi[0]
 
-        rup = y * (1 - E)
-        rdown = y
+        r_up = y * (1 - E)
+        r_down = y
 
         for i in self.qi:
-            if rup > i:
-                selected_rup = i
-            if rdown > i:
-                selected_rdown = i
+            if r_up > i:
+                selected_R_up = i
+            if r_down > i:
+                selected_R_down = i
 
         if len(self.selected_qi) == 0:
-            self.selected_qi.append(selected_rdown)
-        elif self.selected_qi[-1] < selected_rup:
-            self.selected_qi.append(selected_rup)
-        elif selected_rup <= self.selected_qi[-1] < selected_rdown:
+            self.selected_qi.append(selected_R_down)
+        elif self.selected_qi[-1] < selected_R_up:
+            self.selected_qi.append(selected_R_up)
+        elif selected_R_up <= self.selected_qi[-1] < selected_R_down:
             self.selected_qi.append(self.selected_qi[-1])
         else:
-            self.selected_qi.append(selected_rdown)
+            self.selected_qi.append(selected_R_down)
 
 
         # Selects the last added quality value after deadzone 
