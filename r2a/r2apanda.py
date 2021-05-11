@@ -70,12 +70,6 @@ class R2APanda(IR2A):
         alfa = 0.2 # taxa de convergência de suavização do throughput alvo
         limit_calc_throughput = False
 
-        if len(sys.argv) >= 2: # permite usar o w como um argumento
-            w = float(sys.argv[1]) * 1000000
-        
-        if len(sys.argv) >= 4: # permite definir se será usado um limitador para o throughput alvo em relação ao real
-            limit_calc_throughput = True
-
         y = self.throughputs[0]
         if len(self.throughputs) == 1: # inicialização o throughput alvo com o valor obtido ao transferir o arquivo mpd
             x = self.throughputs[0]
@@ -137,9 +131,6 @@ class R2APanda(IR2A):
 
     def handle_segment_size_response(self, msg):
         beta = 0.2
-
-        if len(sys.argv) >= 3:
-            self.min_buffer_size = float(sys.argv[2])
 
         B = self.whiteboard.get_amount_video_to_play()
         if len(self.throughputs) == 1:
